@@ -1,0 +1,311 @@
+---
+title: "Starting with Data"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+# Importing data  
+
+There are two ways to import data into R, (1) use the built-in GUI in the
+Environment tab, or (2) write the code yourself. If you use option one, after
+you make your selection, the GUI will output the code you *could have used* to 
+import the dataset. 
+
+Let's go with option two, since we are learning to write code! 
+
+# Data import with the here package
+
+Importing data requires for you to tell R how to get to the dataset you are 
+interested in analyzing. This can be rather cumbersome, if you resort to telling
+R exactly where the data lives on your computer (e.g.,
+`C:\Users\atheo\Documents\Service\csu-math-ws\data`). The fortunate thing about
+RStudio projects is that they **always** act as homebase. So, you only need to 
+specify where the data live *relative* to where your RStudio project is 
+stored. 
+
+The specification of a path to get to the dataset can be a bit confusing, but
+there is help! The **here** package provides an intuitive way to "find your
+project's files, based on the current working directory" when the RStudio 
+project is loaded. Specifically, the `here()` function in the here package 
+accepts character inputs, specifying the path for the data. For example, if I 
+had the `gapminder.csv` stored in the `data` folder of my RStudio project, the 
+following code will navigate to the data: `here("data", "gapminder_data.csv")`
+ 
+We are also going to use the `read_csv()` function from the **`readr`** package,
+which is part of the **`tidyverse`**; learn more about the **`tidyverse`**
+collection of packages [here](https://www.tidyverse.org/).
+**`readr`** gets installed as part as the **`tidyverse`** installation.
+When you load  the **`tidyverse`** (`library(tidyverse)`), the core packages
+(the packages used in most data analyses) get loaded, including **`readr`**.
+
+So, before we can use the `read_csv()` function, we need to load the package. 
+We can use `here::here()` to use the `here()` function from the here package, 
+without loading the package, so long as the here package has been installed! 
+
+```{r}
+library(tidyverse)
+
+gapminder <- read_csv(
+  here::here("data", "gapminder_data.csv")
+)
+```
+
+If you were to type in the code above, it is likely that the `read.csv()`
+function would appear in the automatically populated list of functions. This
+function is different from the `read_csv()` function, as it is included in the
+"base" packages that come pre-installed with R. Overall, `read.csv()` behaves
+similar to `read_csv()`, with a few notable differences. First, `read.csv()`
+coerces column names with spaces and/or special characters to different names
+(e.g. `interview date` becomes `interview.date`). Second, `read.csv()`
+stores data as a `data.frame`, where `read_csv()` stores data as a `tibble`.
+We prefer tibbles because they have nice printing properties among other
+desirable qualities. Read more about tibbles [here](https://tibble.tidyverse.org/).
+
+
+### Inspecting data 
+
+The second statement in the code above creates a data frame but doesn't output
+any data because, as you might recall, assignments (`<-`) don't display
+anything. (Note, however, that `read_csv` may show informational
+text about the data frame that is created.) If we want to check that our data
+has been loaded, we can see the contents of the data frame by typing its name:
+`gapminder` in the console.
+
+
+# Structure of data  
+
+The data we will use is organized into data tables. When you imported the 
+`gapminder_data.csv` data into R was saved as an object. You are able to inspect
+the structure of these data object using functions built in to R 
+(no packages necessary).  
+
+Run the following code. What is output from each of the following commands?
+
+```{r}
+class(gapminder) ## What is the object class of the data?
+
+dim(gapminder) ## What is the first number represent? What about the second number?
+
+names(gapminder) ## What does this output refer to?
+
+str(gapminder) ## What is the structure of the data?
+
+summary(gapminder) ## What is the data type of each variable in our dataset?
+
+typeof(gapminder) ## What is the storage mode of a data.frame?
+```
+
+When we inspect dataframes, or other objects in R, there are some general 
+functions that are useful to check the content/structure of the data. 
+Here are some:
+
+- size:  
+    + `dim(data)`: rows and columns  
+    + `nrow(data)`: number of rows  
+    + `ncol(data)`: number of columns  
+
+
+- content:  
+    + `head(data)`: first 6 rows  
+    + `tail(data)`: last 6 rows  
+    + `View(data)`: opens viewer window in separate tab  
+    
+
+- names:  
+    + `colnames(data)`: column names of dataframe  
+    + `rownames(data)`: row names of dataframe  
+
+
+- summary of content:  
+    + `str(data)`: structure of object and information about the columns  
+    + `glimpse(data)`: similar information to `str`, but neater output  
+    + `summary(data)`: summary statistics for each column  
+  
+
+*Note:* Many of these are generic functions that will work on other data types, 
+not just on `data.frame`s. 
+
+
+## Indexing and subsetting data frames
+
+Our `gapminder` data frame has rows and columns (it has 2 dimensions).
+In practice, we may not need the entire data frame; for instance, we may only
+be interested in a subset of the observations (the rows) or a particular set
+of variables (the columns). If we want to extract some specific data from it,
+we need to specify the "coordinates" we want from it. Row numbers come first,
+followed by column numbers.
+
+```{r}
+## first element in the first column of the tibble
+gapminder[1, 1]
+
+## first element in the 6th column of the tibble 
+gapminder[1, 6]
+
+## first column of the tibble (as a vector)
+gapminder[[1]]
+
+## first column of the tibble
+gapminder[1]
+
+## first three elements in the 6th column of the tibble
+gapminder[1:3, 6]
+
+## the 3rd row of the tibble
+gapminder[3, ]
+
+## equivalent to head_gapminder <- head(gapminder)
+head_gapminder <- gapminder[1:6, ]
+```
+
+`:` is a special function that creates numeric vectors of integers in increasing
+or decreasing order, test `1:10` and `10:1` for instance.
+
+You can also exclude certain indices of a data frame using the "`-`" sign:
+
+```{r}
+# The whole tibble, except the first column
+gapminder[, -1]          
+
+# Equivalent to head(gapminder)
+gapminder[-c(7:131), ]   
+```
+
+`tibble`s can be subset by calling indices (as shown previously), but also by
+calling their column names directly:
+
+```{r}
+gapminder["village"]       # Result is a tibble
+
+gapminder[, "village"]     # Result is a tibble
+
+gapminder[["village"]]     # Result is a vector
+
+gapminder$village          # Result is a vector
+```
+
+In RStudio, you can use the autocompletion feature to get the full and correct
+names of the columns.
+
+
+### Your turn! 
+
+### Exercise 1
+
+Create a tibble (`gapminder_100`) containing only the data in
+row 100 of the `gapminder` dataset.
+
+### Exercise 2 
+
+Notice how `nrow()` gave you the number of rows in the tibble?  
+
+  * Use that number to pull out just that last row in the tibble.
+  * Compare that with what you see as the last row using `tail()` to make 
+  sure it's meeting expectations.
+  * Pull out that last row using `nrow()` instead of the row number.    
+  * Create a new tibble (`gapminder_last`) from that last row.
+
+### Exercise 3 
+
+Using the number of rows in the gapminder dataset that you found in
+Exercise 2, extract the row that is in the middle of the dataset. Store
+the content of this middle row in an object named `gapminder_middle`.
+
+### Exercise 4
+
+Combine `nrow()` with the `-` notation above to reproduce the behavior of
+`head(gapminder)`, keeping just the first through 6th rows of the gapminder
+dataset. Compare the output with the `head()` function to confirm they are the 
+same!
+
+
+# Changing Data Type  
+
+In most cases, it is preferable to leave variables encoded as text as 
+characters, but there are instances where a different data type would be 
+preferable. For example, what if you would like for the `continent`s to be 
+ordered in a specific way? 
+
+Consider the variables country and continent. These variables represent a
+broader class of what we call categorical variables. In R there are two ways 
+to store this information, (1) as a series of `character` strings, or (2) as a 
+`factor`. In the early days of coding in R, factors were more efficient than 
+characters, since you only need to store the level of the factor each 
+observation went with. 
+
+While factors are still useful in today's statistical analyses and data 
+visualizations, they can be tricky to deal with. When you convert a variable 
+to a factor, for many operations you will get different results than for a 
+character (McNamara & Horton, 2017). 
+
+In these data country has 142 levels and continent has five levels (Asia, 
+Europe, Africa, Americas, Oceania). If we want R to view these variables
+as factors instead of characters, we need to change their data type.   
+
+
+```{r}  
+## Tells you the unique values of country
+unique(gapminder$country)
+
+## Tells you the unique values of continent
+unique(gapminder$continent)
+
+## creates a new variable that is the factor version of country
+gapminder$country_fct <- as.factor(gapminder$country) 
+
+## creates a new variable that is the factor version of continent
+gapminder$continent_fct <- as.factor(gapminder$continent) 
+
+```
+
+There is also a function that will allow for you to specify the order of the 
+levels of a factor! As we saw before, the `as.factor()` function chooses the 
+levels alphabetically. Suppose you would like for the continents to be in the 
+following order: Americas, Europe, Asia, Africa, Oceania. 
+
+Using the `factor()` function this would look like:
+
+```{r}
+gapminder$continent_fct <- factor(gapminder$continent, 
+                                  levels = c("Americas", "Europe", "Africa", 
+                                             "Oceania")) 
+```
+
+### Your turn! 
+
+### Exercise 1 
+
+Year was saved as an integer data type (1952 - 2007), but we may want to
+consider it to be a categorical variable (a factor). Write the R code to create
+a new variable called `year_fct` that is a factor of `year` (as you did with
+`country` and `continent`). 
+
+### Exercise 2 
+
+Now, using the functions you learned for inspecting data, verify that `year_fct`
+is viewed as a categorical variable, with the same levels as `year`. (hint: you
+have already used three functions that would do this for you)  
+
+
+### Cleaning Data  
+
+In many instances, you will deal with data that are not "clean". Based on the
+output below, how many rows in the `gapminder` data have an NA present?  
+
+```{r NA, purl = TRUE, tidy = TRUE}
+## gives the dimensions of the dataset in (row, column) format
+dim(gapminder)   
+
+## na.omit() takes dataframes, matrices, and vectors and returns the object with incomplete cases removed (NA's removed)
+dim(na.omit(gapminder)) 
+```
+
+
+### Your turn!
+
+### Exercise
+
+Save a "clean" version of the `gapminder` dataset into an object named 
+`gapminder_clean`. The "clean" version should contain no missing values. 
+

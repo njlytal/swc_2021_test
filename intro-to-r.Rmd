@@ -1,0 +1,394 @@
+---
+title: "Introduction to R"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### Using R as a calculator
+
+The simplest thing you could do with R is to do arithmetic. 
+
+__Practice__: Enter each of the following commands and confirm that the response
+is the correct answer.  
+
+```{r}  
+1 + 2 
+16*9
+sqrt(2)
+20/5
+18.5 - 7.21
+3 %% 2 ## what is this doing?
+```
+
+
+### Creating objects
+
+These operations, however, are not very interesting. To do more useful things in
+R, we need to assign values to an object. To create an object, we tell R the
+object's name, followed by an assignment arrow (`<-`), and finally the value of 
+the object. This would look something like this:
+
+`x <- 6`
+
+Once we execute/run this line of code, we notice that a new object appears in 
+our environment window. This window shows all of the objects that you have 
+created during your R session. The value of `x` appears next to it, since it 
+is a scalar. 
+
+
+## A note on objects vs. variables
+
+> What are known as `objects` in R are known as `variables` in many other
+> programming languages. Depending on the context, `object` and `variable` can
+> have drastically different meanings. However, in this lesson, the two words
+> are used synonymously. For more information see:
+> [https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Objects](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Objects)
+
+When assigning a value to an object, R does not print anything. You
+can force R to print the value by using parentheses or by typing
+the object name:
+
+```{r}
+year <- 2016    # doesn't print anything
+(year <- 2016)  # putting parenthesis around the call prints the value of year
+year         # and so does typing the name of the object
+```
+
+Now that R has `year` in memory, we can do arithmetic with it. For
+instance, we may want to find the number of years after 1989 it is:
+
+```{r}
+year - 1989
+```
+
+We can also change an object's value by assigning it a new one:
+
+```{r}
+year <- 2005
+year - 1989
+```
+
+This means that assigning a value to one object does not change the values of
+other objects. For example, let's store the plot's area in acres
+in a new object, `years_post_birthday`:
+
+```{r}
+years_post_birthday <- year - 1989
+```
+
+and then change `year` to 2002.
+
+```{r}
+year <- 2002
+```
+
+### Your turn!
+
+### Exercise
+
+What do you think is the current content of the object `years_post_birthday`?
+16 or 13? 
+
+
+### Adding code comments
+
+All programming languages allow the programmer to include comments in their
+code. To do this in R we use the `#` character. Anything to the right of the `#`
+sign and up to the end of the line is treated as a comment and is ignored by R.
+You can start lines with comments or include them after any code on the line.
+
+```{r}
+ms_year <- 2016    # Year got M.S.
+phd_year <- ms_year + 4 # Year got Ph.D. 
+```
+
+
+### Your turn! 
+
+### Exercise
+
+Create two variables `length` and `width` and assign them values. It should be
+noted that, because `length` and `width` are built-in R functions, R Studio
+might add "()" after length and width and if you leave the parentheses you will
+get unexpected results. This is why you might see other programmers abbreviate
+common words.
+
+Create a third variable `area` and give it a value based on the current values
+of `length` and `width`.
+
+Show that changing the values of either `length` and `width` does not affect the
+value of `area`.
+
+
+### Functions and their arguments
+
+Functions are "canned scripts" that automate more complicated sets of commands
+including operations assignments, etc. Many functions are predefined, or can be
+made available by importing R *packages* (more on that later). A function
+usually gets one or more inputs called *arguments*. Functions often (but not
+always) return a *value*. A typical example would be the function `sqrt()`. The
+input (the argument) must be a number, and the return value (in fact, the
+output) is the square root of that number. Executing a function ('running it')
+is called *calling* the function. An example of a function call is:
+
+```{r}
+b <- sqrt(a)
+```
+
+Here, the value of `a` is given to the `sqrt()` function, the `sqrt()` function
+calculates the square root, and returns the value which is then assigned to
+the object `b`. This function is very simple, because it takes just one argument.
+
+The return 'value' of a function need not be numerical (like that of `sqrt()`),
+and it also does not need to be a single item: it can be a set of things, or
+even a dataset. We'll see that when we read data files into R.
+
+Arguments can be anything, not only numbers or filenames, but also other 
+objects. Exactly what each argument means differs per function, and must be
+looked up in the documentation (see below). Some functions take arguments which
+may either be specified by the user, or, if left out, take on a *default* value:
+these are called *options*. Options are typically used to alter the way the
+function operates, such as whether it ignores 'bad values', or what symbol to
+use in a plot.  However, if you want something specific, you can specify a value
+of your choice which will be used instead of the default.
+
+Let's try a function that can take multiple arguments: `round()`
+
+```{r}
+round(3.14159)
+```
+
+Here, we've called `round()` with just one argument, `3.14159`, and it has
+returned the value `3`.  That's because the default is to round to the nearest
+whole number. If we want more digits we can see how to do that by getting
+information about the `round()` function.  We can use `args(round)` or look at
+the help for this function using `?round`.
+
+```{r}
+args(round)
+```
+
+```{r}
+?round
+```
+
+We see that if we want a different number of digits, we can
+type `digits = 2` or however many we want.
+
+```{r}
+round(3.14159, digits = 2)
+```
+
+If you provide the arguments in the exact same order as they are defined you
+don't have to name them:
+
+```{r}
+round(3.14159, 2)
+```
+
+And if you do name the arguments, you can switch their order:
+
+```{r}
+round(digits = 2, x = 3.14159)
+```
+
+But if you don't name the arguments, you can't switch their order:
+
+```{r}
+round(2, 3.14159)
+```
+
+It's good practice to put the non-optional arguments (like the number you're
+rounding) first in your function call, and to specify the names of all optional
+arguments.  If you don't, someone reading your code might have to look up the
+definition of a function with unfamiliar arguments to understand what you're
+doing.
+
+### Your turn! 
+
+### Exercise
+
+Type in `?round` at the console and then look at the output in the Help pane.
+What other functions exist that are similar to `round`?
+How do you use the `digits` parameter in the round function?
+
+
+### Vectors and data types
+
+A vector is the most common and basic data type in R, and is pretty much
+the workhorse of R. A vector is composed by a series of values, which can be
+either numbers or characters. We can assign a series of values to a vector using
+the `c()` function. For example we can create a vector of years in the 1990s and
+assign it to a new object `years_90s`:
+
+```{r}
+years_90s <- c(1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999)
+years_90s  
+```
+
+A vector can also contain characters. For example, we can have a vector of 
+country names:
+
+```{r}
+countries <- c("Beligum", "Denmark", "Germany", "France")
+countries 
+```
+
+The quotes around "Belgium", etc. are essential here. Without the quotes R
+will assume there are objects called `Beligum`, `Denmark`, `Germany`, and
+`France`. As these objects don't exist in R's memory, there will be an error
+message:
+
+```{r}
+countries <- c(Beligum, Denmark, Germany, France)
+```
+
+
+### Inspecting objects
+
+There are many functions that allow you to inspect the content of a
+vector. `length()` tells you how many elements are in a particular vector:
+
+```{r}
+length(years_90s)
+length(countries)
+```
+
+An important feature of a vector, is that all of the elements are the same type
+of data. The function `class()` indicate the class (the type of element) of an
+object:
+
+```{r}
+class(years_90s)
+class(countries)
+```
+
+The function `str()` provides an overview of the structure of an object and its
+elements. It is a useful function when working with large and complex
+objects:
+
+```{r}
+str(years_90s)
+str(countries)
+```
+
+You can use the `c()` function to add other elements to your vector:
+
+```{r}
+possessions <- c("bicycle", "radio", "television")
+possessions <- c(possessions, "mobile_phone") # add to the end of the vector
+possessions <- c("car", possessions) # add to the beginning of the vector
+possessions
+```
+
+In the first line, we take the original vector `possessions`,
+add the value `"mobile_phone"` to the end of it, and save the result back into
+`possessions`. Then we add the value `"car"` to the beginning, again saving the
+result back into `possessions`.
+
+We can do this over and over again to grow a vector, or assemble a dataset.
+As we program, this may be useful to add results that we are collecting or
+calculating.
+
+An **atomic vector** is the simplest R **data type** and is a linear vector of a
+single type. Above, we saw 2 of the 6 main **atomic vector** types  that R
+uses: `"character"` and `"numeric"` (or `"double"`). These are the basic
+building blocks that all R objects are built from. The other 4 **atomic vector**
+types are:
+
+* `"logical"` for `TRUE` and `FALSE` (the boolean data type)
+* `"integer"` for integer numbers (e.g., `2L`, the `L` indicates to R that it's
+an integer)
+* `"complex"` to represent complex numbers with real and imaginary parts (e.g.,
+`1 + 4i`) and that's all we're going to say about them
+* `"raw"` for bitstreams that we won't discuss further
+
+You can check the type of your vector using the `typeof()` function and
+inputting your vector as the argument.
+
+Vectors are one of the many **data structures** that R uses. Other important
+ones are lists (`list`), matrices (`matrix`), data frames (`data.frame`),
+factors (`factor`) and arrays (`array`).
+
+### Your turn!
+
+### Exercise 1
+
+We’ve seen that atomic vectors can be of type character, numeric (or double),
+integer, and logical. But what happens if we try to mix these types in a
+single vector?
+
+### Exercise 2
+
+What will happen in each of these examples? (hint: use `class()`
+to check the data type of your objects):
+
+```{r}
+num_char <- c(1, 2, 3, "a")
+num_logical <- c(1, 2, 3, TRUE)
+char_logical <- c("a", "b", "c", TRUE)
+tricky <- c(1, 2, 3, "4")
+```
+
+Why do you think it happens?
+
+### Exercise 3 
+
+How many values in `combined_logical` are `"TRUE"` (as a character) in the
+following example:
+
+```{r}
+num_logical <- c(1, 2, 3, TRUE)
+char_logical <- c("a", "b", "c", TRUE)
+combined_logical <- c(num_logical, char_logical)
+```
+
+
+You've probably noticed that objects of different types get converted into a
+single, shared type within a vector. In R, we call converting objects from one
+class into another class _coercion_. These conversions happen according to a hierarchy, whereby some types get preferentially coerced into other types.
+
+__Can you draw a diagram that represents the hierarchy of how these data types are coerced?__
+
+
+### Lists  
+ 
+While the elements of vectors have to be of the same data type, a list is a
+special vector in `R` that allows for you to store a variety of types of 
+objects. If you have a vector, a matrix, a character, you can store all of them
+into one list object!
+
+The arguments to the list function are the components of the list. Where the 
+components can be characters, vectors, matrices, or other data structures. 
+Here, we create a list whose components are the three vectors we've been 
+working with:
+
+```{r}
+my_first_list <- list(years_90s, countries)
+my_first_list
+```
+
+We notice that when printing a list, the output looks a bit different. There 
+are a whole bunch of brackets! Let's break them down. I like to think of a list
+as a shelf with cubby holes. The cubby holes are the components of the list, 
+but there are elements in each cubby.  
+
+* To get to a specific component (cubby) of a list, you use the double brackets
+next to the name of the list (e.g `my_first_list[[1]]`).  
+* To access the elements inside each cubby, you then use single square brackets 
+(e.g. `my_first_list[[1]][2]`). 
+
+
+### Named Lists
+
+```{r}
+my_named_list <- list(title = "statistics", 
+                      numbers = 1:10,
+                      data = TRUE)
+my_named_list
+```
+
+We see the output for a named list is slightly different. Instead of double 
+brackets next to each component, there are now `$` and names of the variable. 
+This will help you understand the structure of data.frames (coming up next)!
+
